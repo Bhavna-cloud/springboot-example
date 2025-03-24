@@ -20,17 +20,17 @@ jobs:
       - name: Login to Docker hub
         run: echo "${{ secrets.DOCKER_TOKEN }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
       - name: Build docker image
-        run: docker build -t learner183/github-action-projects-example .
+        run: docker build -t learner183/github-action-projects .
       - name: Publish image to docker hub
-        run: docker push learner183/github-action-projects-example:latest
+        run: docker push learner183/github-action-projects:latest
 
   deploy:
     needs: build
-    runs-on: [aws-ec2]
+    runs-on: self-hosted
     steps:
       - name: Pull Image from docker hub
-        run: docker pull learner183/github-action-projects-example:latest
+        run: docker pull learner183/github-action-projects:latest
       - name: Delete old container
-        run: docker rm -f springboot-example-container
+        run: docker rm -f springboot-example-container || true
       - name: Run docker container
-        run: docker run -d -p 8080:8080 --name springboot-example-container learner183/github-action-projects-example
+        run: docker run -d -p 8080:8080 --name springboot-example-container learner183/github-action-projects
